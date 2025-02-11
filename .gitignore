@@ -1,0 +1,12 @@
+# Ignorar una carpeta específica
+# carpeta_ignorada/
+
+# Ignorar un archivo específico
+# archivo_ignorado.txt
+
+# Ignorar todos los archivos con una extensión específica
+*.RData
+*.RHistory
+
+# Ignorar una carpeta y todo su contenido
+analisis old/*
