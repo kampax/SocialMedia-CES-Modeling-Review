@@ -15,7 +15,7 @@ library(maptools)
 
 
 # Read the dataframe
-df<- read.delim("Data_extraction.csv", sep = ";")
+df<- read.delim("Database/Data_extraction.csv", sep = ";")
 
 # Eliminate rows with NA values in the ID column
 df <- df[!is.na(df$ID),]
@@ -67,7 +67,7 @@ sup
 ###################################
 
 # Read the CES dataframe 
-df2 <- read.delim("Validacion_CES and variables groups.csv", sep = ";")
+df2 <- read.delim("Database/Validacion_CES and variables groups.csv", sep = ";")
 
 # CES Count
 ces <- df2 %>%
@@ -612,7 +612,7 @@ print(result)
 ##################################
 
 # Data frame of literature review
-d<- read.delim("savedrecs_modified.csv", sep = ";", stringsAsFactors = FALSE, encoding = "latin1")
+d<- read.delim("Database/savedrecs_modified.csv", sep = ";", stringsAsFactors = FALSE, encoding = "latin1")
 
 # Select the columns of interest
 a <- d %>% select(ID, Authors, Publication.Year)
@@ -763,7 +763,7 @@ url <- "https://docs.google.com/spreadsheets/d/15jqksor_23ZRpqhGwfxFBika0phFHUcR
 data2 <- read_sheet(url, sheet = "EvaluationMetrics")
 
 # Data frame of literature 
-# data2<- read.delim("Data_extraction.csv", sep = ";", stringsAsFactors = FALSE, encoding = "latin1")
+# data2<- read.delim("Database/Data_extraction.csv", sep = ";", stringsAsFactors = FALSE, encoding = "latin1")
 
 # Exclude REVISAR, SOLVES and Undefined in Metrics column
 eval_metric <- data2[data2$Metrics != "REVISAR" & data2$Metrics != "SOLVES" & data2$Metrics != "Undefined",]
@@ -780,7 +780,8 @@ reemplazo2 <- c(
   "Pseudo R2", "pseudo R²" = "R²",# Uno con el R2
   "Adjusted R²" = "R²",# Uno con el R2
   "Adjusted Log Likelihood" = "LL",
-  "Log Likelihood" = "LL",
+  "Log Likelihood" = "LogLik",
+  "Likehood Ratio" = "LRT",
   "Gain" = "Gain",
   "TSS (True Skill Statistic)" = "TSS",
   "R² (Coefficient of Determination)" ="R²" ,
@@ -957,8 +958,8 @@ combined_plot <- ggdraw() +
   draw_plot(r2_g, 0.77, 0.57, 0.14, 0.22)
 
 # print combined plot 
-# print(combined_plot)
-# ggsave( "Figures/7) Sankey_Evaluation metrics_hist.png", width = 16, height = 8, dpi = 600)
+print(combined_plot)
+ggsave( "Figures/7) Sankey_Evaluation metrics_hist.png", width = 16, height = 8, dpi = 600)
 
 
 # Another option with values
@@ -1328,7 +1329,7 @@ p
 
 
 # read the dataframe 
-d<- read.delim("savedrecs_modified.csv", sep = ";", stringsAsFactors = FALSE, encoding = "latin1")
+d<- read.delim("Database/savedrecs_modified.csv", sep = ";", stringsAsFactors = FALSE, encoding = "latin1")
 
 # First step: filter only the papers that were analyzed in depth
 d<- d %>% filter(Final.extraction=="yes")
@@ -1538,7 +1539,7 @@ eco_percentage <- eco %>%
 
 
 # read the dataframe 
-d<- read.delim("savedrecs_modified.csv", sep = ";", stringsAsFactors = FALSE, encoding = "latin1")
+d<- read.delim("Database/savedrecs_modified.csv", sep = ";", stringsAsFactors = FALSE, encoding = "latin1")
 
 # First step: filter only the papers that were analyzed in depth
 
@@ -1761,7 +1762,7 @@ dev.off()
 
 # Prisma metrics
 # Data frame of literature 
-d<- read.delim("savedrecs_modified.csv", sep = ";", stringsAsFactors = FALSE, encoding = "latin1")
+d<- read.delim("Database/savedrecs_modified.csv", sep = ";", stringsAsFactors = FALSE, encoding = "latin1")
 
 # Number of papers
 length(unique(d$ID))
