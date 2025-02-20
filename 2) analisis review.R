@@ -113,13 +113,13 @@ ces_fig <- ggplot(ces, aes(x = CES.services.type.homogene, y= CES_count, fill = 
   theme(legend.position = "bottom")
 ces_fig
 
-# Combine both graphs using cowplot
-combined_plot <- ggdraw() +
-  draw_plot(ces_fig, 0, 0, 1, 1) +
-  draw_plot(sup, 0.60, 0.69, 0.35, 0.37) # ajustar las coordenadas y el tamaño según sea necesario
-
-# Display plot
-print(combined_plot)
+# # Combine both graphs using cowplot
+# combined_plot <- ggdraw() +
+#   draw_plot(ces_fig, 0, 0, 1, 1) +
+#   draw_plot(sup, 0.60, 0.69, 0.35, 0.37) # ajustar las coordenadas y el tamaño según sea necesario
+# 
+# # Display plot
+# print(combined_plot)
 
 # Save plot
 ggsave("Figures/1) CES.png", width = 8, height = 5, dpi = 600)
@@ -259,7 +259,7 @@ data_sankey_CES2 <- data_sankey_CES %>%
 # Create Sankey plot using ggplot2 and ggsankey
 ggplot(data_sankey_CES2, aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = factor(node), label = node)) +
   geom_sankey(flow.alpha = 0.5, node.color = "black") +
-  geom_sankey_label(size = 3, color = "white", fill = "black", ) +
+  geom_sankey_label(size = 5, color = "white", fill = "black", ) +
   theme_sankey(base_size = 16) +
   theme(legend.position = "none",
         axis.text.x = element_text(size = 22))+
@@ -267,7 +267,7 @@ ggplot(data_sankey_CES2, aes(x = x, next_x = next_x, node = node, next_node = ne
   scale_x_discrete(label = c("IPBES Categories", "CES NCP", "Variables grouped Level 3"))
 
 # Save plot
-ggsave("Figures/2) CES_sankey_level3.png", width = 16, height = 8, dpi = 600)
+ggsave("Figures/2) CES_sankey_level3.png", width = 14, height = 10, dpi = 600)
 
 
 # Convert table to long format
@@ -330,7 +330,7 @@ data_sankey_CES4 <- data_sankey_CES3 %>%
 # Crear el gráfico de Sankey usando ggplot2 y ggsankey
 ggplot(data_sankey_CES4, aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = factor(node), label = node)) +
   geom_sankey(flow.alpha = 0.5, node.color = "black") +
-  geom_sankey_label(size = 3, color = "white", fill = "black", ) +
+  geom_sankey_label(size = 5, color = "white", fill = "black", ) +
   theme_sankey(base_size = 16) +
   theme(legend.position = "none",
         axis.text.x = element_text(size = 22))+
@@ -338,7 +338,7 @@ ggplot(data_sankey_CES4, aes(x = x, next_x = next_x, node = node, next_node = ne
   scale_x_discrete(label = c("IPBES Categories", "CES NCP", "Variables grouped Level 2"))
 
 # Save plot
-ggsave("Figures/2) CES_sankey_level2.png", width = 16, height = 8, dpi = 600)
+ggsave("Figures/2) CES_sankey_level2.png", width = 14, height = 10, dpi = 600)
 ##################################
 ######### 3) Variables ###########
 ##################################
@@ -374,13 +374,19 @@ variables <- df %>%
 variables <- variables[!is.na(variables$Level2) & variables$Level2 != "", ]
 variables <- variables[!is.na(variables$Level1) & variables$Level1 != "", ]
 
+
+# Change "Anthropic elements" for "Anthropogenic elements"
+variables <- variables %>%
+  mutate(Level1 = ifelse(Level1 == "Anthropic elements", "Anthropogenic elements", Level1))
+
 # Customize the order of labels
 variables <- variables %>%
-  mutate(Level1 = factor(Level1, levels = c( "Natural elements", "Anthropic elements" ,"Land management","Remote sensing data")))
+  mutate(Level1 = factor(Level1, levels = c( "Natural elements", "Anthropogenic elements" ,"Land management","Remote sensing data")))
 
 # Convert variables to a factor with custom order 
 variables <- variables %>% 
   mutate(Level2 = factor(Level2, levels = Level2))
+
 
 # plot variables 
 ggplot(variables, aes(x = Level2, y = var_count, fill = Level1)) +
@@ -565,14 +571,14 @@ data_sankey_long3 <- data_sankey_long2 %>%
 # Create Sankey plot using ggplot2 and ggsankey
 ggplot(data_sankey_long3, aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = factor(node), label = node)) +
   geom_sankey(flow.alpha = 0.5, node.color = "black") +
-  geom_sankey_label(size = 4, color = "white", fill = "black") +
+  geom_sankey_label(size = 5, color = "white", fill = "black") +
   theme_sankey(base_size = 16) +
   theme(legend.position = "none",
         axis.text.x = element_text(size = 22))+
   labs(x="")+
   scale_x_discrete(label = c("Variables grouped\n Level 1", "Variables grouped\n Level 2", "Variables grouped\n Level 3"))
 
-ggsave("Figures/5) Sankey Variables.png", width = 16, height = 8, dpi = 600)
+ggsave("Figures/5) Sankey Variables.png", width = 14, height = 10, dpi = 600)
 
 
 #########################################
@@ -603,6 +609,17 @@ result <- var.y %>%
   
 # write the results
 write.csv(result, "top_varibles.csv")
+
+# Sumar roads los valores de suma por Variables.Standardized
+var.y %>%
+  group_by(Variables.Standardized) %>%
+  summarise(suma = sum(suma)) %>%
+  arrange(desc(suma))
+
+result %>%
+  group_by(Variables.Standardized) %>%
+  summarise(suma = sum(suma)) %>%
+  arrange(desc(suma))
 
 # show result
 print(result)
@@ -774,14 +791,14 @@ reemplazo2 <- c(
   "Sensitivity and Specificity" = "Sensitivity",  
   "Accuracy"= "Acc",
   "RMSE (Root Mean Squared Error)" = "RMSE",
-  "McFadden and Nagelkerke pseudo R²" = "R²",# Uno con el R2
+  "McFadden and Nagelkerke pseudo R²" = "R²",# Join with R2
   "MSE (Mean Square Error)"= "MSE",
   "Gini Impurity"= "GI",
-  "Pseudo R2", "pseudo R²" = "R²",# Uno con el R2
-  "Adjusted R²" = "R²",# Uno con el R2
+  "Pseudo R2", "pseudo R²" = "R²",# Join with R2
+  "Adjusted R²" = "R²",# JOin with R2
   "Adjusted Log Likelihood" = "LL",
   "Log Likelihood" = "LogLik",
-  "Likehood Ratio" = "LRT",
+  "Likelihood Ratio" = "LRT",
   "Gain" = "Gain",
   "TSS (True Skill Statistic)" = "TSS",
   "R² (Coefficient of Determination)" ="R²" ,
@@ -790,9 +807,9 @@ reemplazo2 <- c(
   "AUC-ROC (Area Under the Receiver Operating Characteristic Curve)" = "AUC-ROC",
   "MAPE(meanabsolutepercentageerror)" = "MAPE",
   "MSE(Mean Square Error)" = "MSE",
-  "Percentage of deviance" = "Deviance",
-  "Percentage of explained deviance" = "Deviance",
-  "deviance explained (D2)"= "Deviance",
+  "Percentage of deviance" = "Deviance", #Join deviance
+  "Percentage of explained deviance" = "Deviance",  #Join deviance
+  "deviance explained (D2)"= "Deviance",  #Join deviance
   "Moran's I" = "Moran's I",
   "Kappa" = "Kappa",
   "Weight" = "Weight"
@@ -879,8 +896,8 @@ orden_variables <- c(
 
 # Create Sankey plot using ggplot2 and ggsankey
 sankey_metrics<-ggplot(data_sankey_eval, aes(x = x, next_x = next_x, node = node, next_node = next_node, fill = factor(node), label = node)) +
-  geom_sankey(flow.alpha = 0.5, node.color = "black") +
-  geom_sankey_label(size = 4, color = "white", fill = "black") +
+  geom_sankey(flow.alpha = 0.5, node.color = "black",  width = 0.19, space = 14) +
+  geom_sankey_label(size = 4, color = "white", fill = "black", space = 14) +
   theme_sankey(base_size = 16) +
   theme(legend.position = "none",
         axis.text.x = element_text(size = 22))+
@@ -953,13 +970,13 @@ sd(r2_values$`Metric Value`, na.rm = TRUE)
 
 # Combine three graphs using cowplot
 combined_plot <- ggdraw() +
-  draw_plot(sankey_metrics, 0, 0, 1, 1) +
+  draw_plot(sankey_metrics, 0, 0, 0.9, 0.9) +
   draw_plot(auc_g, 0.77, 0.26, 0.14, 0.22) +
   draw_plot(r2_g, 0.77, 0.57, 0.14, 0.22)
 
 # print combined plot 
 print(combined_plot)
-ggsave( "Figures/7) Sankey_Evaluation metrics_hist.png", width = 16, height = 8, dpi = 600)
+ggsave( "Figures/7) Sankey_Evaluation metrics_hist.png", width = 15, height = 9, dpi = 600)
 
 
 # Another option with values
@@ -1013,7 +1030,9 @@ ab <- ggplot(pres_count, aes(x = "", y = prop, fill = Presence.Abundance.model))
   labs(fill = "", title = "Presence/Abundance") +
   theme_void() +
   scale_fill_manual(values = c("Abundance" = "#E69F00", "Both" = "#56B4E9", "Presence" = "#009E73")) +
-  geom_text(aes(y = lab.ypos, label = paste0(round(prop, 0), "%")), color = "white", size = 5)
+  geom_label(aes(y = lab.ypos, label = paste0(round(prop, 0), "%")), 
+             fill = "white", color = "black", size = 5, alpha = 0.7)
+
 
 ab
 
@@ -1232,9 +1251,11 @@ type_count <- type_count %>%
 type_social_media<- ggplot(type_count, aes(x = "", y = n, fill = Type.of.social.media.data)) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar(theta = "y") +
-  geom_text(aes(y = ypos, label =  paste0(round(prop, 0), "%")),
-            color = "white", size = 2.5) +
-  labs(fill = "", title = "Type of social media data", title.x = 0.5, title.y = 1.2 ) +
+  
+  geom_label(aes(y = ypos, label = paste0(round(prop, 0), "%")), 
+             fill = "white", color = "black", size = 3, alpha = 0.7)+
+
+  labs(fill = "", title = "Type of social media data", title.x = 0.5, title.y = 1.2 ,size=10) +
   theme_void() +
   theme(plot.title = element_text(size = 8))+
   scale_fill_manual(values = c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00"))
@@ -1244,7 +1265,7 @@ type_social_media
 # Combine both graphs using cowplot
 combined_plot <- ggdraw() +
   draw_plot(source_g, 0, 0, 1, 1) +
-  draw_plot(type_social_media, 0.58, 0.5, 0.40, 0.45) # ajustar las coordenadas y el tamaño según sea necesario
+  draw_plot(type_social_media, 0.54, 0.56, 0.45, 0.45) # adjust coordinates and size as needed5
 
 # print plot
 print(combined_plot)
