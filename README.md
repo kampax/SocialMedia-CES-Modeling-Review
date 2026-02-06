@@ -18,7 +18,7 @@ This repository contains the codes used in the review article:
 
 **"Spatial modeling of Cultural Ecosystem Services from social media data: Systematic review of operability, opportunities, limitations and ways forward"**
 
-This study analyzes the use of social media data to spatially model Cultural Ecosystem Services (CES). Through a systematic review of 510 scientific articles, we selected those that apply spatial models to CES using social media data.
+This study analyzes the use of social media data to spatially model Cultural Ecosystem Services (CES). Through a systematic review of 628 scientific articles, we selected those that apply spatial models to CES using social media data.
 
 The study objectives were:
 - Identify the diversity of CES assessed.
