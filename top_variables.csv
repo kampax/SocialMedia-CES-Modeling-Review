@@ -1,0 +1,33 @@
+"","IPBES","Variables.Standardized","suma"
+"1","Learning and inspiration","land cover",10
+"2","Learning and inspiration","roads",10
+"3","Learning and inspiration","LULC",7
+"4","Learning and inspiration","elevation",7
+"5","Learning and inspiration","water bodies",7
+"6","Learning and inspiration","biodiversity",6
+"7","Learning and inspiration","ndvi",6
+"8","Maintenance of options","LULC",4
+"9","Maintenance of options","elevation",4
+"10","Maintenance of options","roads",4
+"11","Maintenance of options","water bodies",3
+"12","Maintenance of options","grassland",1
+"13","Maintenance of options","land ownership",1
+"14","Maintenance of options","landform",1
+"15","Maintenance of options","points of interest",1
+"16","Maintenance of options","precipitation",1
+"17","Maintenance of options","relief",1
+"18","Maintenance of options","slope",1
+"19","Maintenance of options","temperature",1
+"20","Maintenance of options","urban areas",1
+"21","Physical and psychological experiences","roads",70
+"22","Physical and psychological experiences","LULC",52
+"23","Physical and psychological experiences","elevation",46
+"24","Physical and psychological experiences","water bodies",42
+"25","Physical and psychological experiences","slope",32
+"26","Physical and psychological experiences","land cover",30
+"27","Supporting identities","roads",37
+"28","Supporting identities","LULC",28
+"29","Supporting identities","elevation",24
+"30","Supporting identities","land cover",21
+"31","Supporting identities","water bodies",21
+"32","Supporting identities","coast",16
