@@ -115,13 +115,32 @@ ces_fig <- ggplot(ces, aes(x = CES.services.type.homogene, y= CES_count, fill = 
 
 ces_fig
 
-# # Combine both graphs using cowplot
-# combined_plot <- ggdraw() +
-#   draw_plot(ces_fig, 0, 0, 1, 1) +
-#   draw_plot(sup, 0.60, 0.69, 0.35, 0.37) # ajustar las coordenadas y el tamaño según sea necesario
-# 
-# # Display plot
-# print(combined_plot)
+## Values of  CES type 
+categories <- c("Instrumental", "Relational", "Intrinsic")
+val <- c(64, 28, 8)
+lab.ypos <- c(68, 14,32)
+
+table <- data.frame(categories, val, lab.ypos)
+
+
+# Create the pie chart
+CES_t <- ggplot(table, aes(x = "", y = val, fill = categories)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar(theta = "y") +
+  labs(fill = "", title = "") +
+  theme_void() +
+  scale_fill_manual(values = c("gray20", "gray40", "gray60", "gray80"))+
+  # geom_text(aes(y = lab.ypos, label =  round(prop, 0)), color = "white", size = 5)
+  geom_text(aes(y = lab.ypos, label =  paste0(round(prop, 0), "%")), color = "white", size = 3)
+
+CES_t
+
+# Combine both graphs using cowplot
+combined_plot <- ggdraw() +
+  draw_plot(ces_fig, 0, 0, 1, 1) +
+  draw_plot(CES_t, 0.60, 0.69, 0.35, 0.37) 
+# Display plot
+print(combined_plot)
 
 # Save plot
 ggsave("Figures/1) CES.png", width = 8, height = 5, dpi = 600)
