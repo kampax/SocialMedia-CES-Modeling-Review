@@ -7,9 +7,11 @@
 # Ignorar todos los archivos con una extensión específica
 *.RData
 *.RHistory
+*.rhistory
 *.gitingore
 *.desktop.ini
 *desktop.ini
+.Rproj.user/
 
 # Ignorar una carpeta y todo su contenido
 analisis old/*

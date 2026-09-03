@@ -1240,6 +1240,15 @@ source <- source %>%
   separate_rows(Social.media.source.data, sep = ";") %>%
   separate_rows(Type.of.social.media.data, sep = ";")
 
+# Standardize source names (merge equivalent/renamed platforms)
+source <- source %>%
+  mutate(Social.media.source.data = trimws(Social.media.source.data),
+         Social.media.source.data = case_when(
+           Social.media.source.data %in% c("Sina Weibo", "Sina Blog") ~ "Sina Weibo",
+           Social.media.source.data %in% c("Dianping", "Meituan Dianping") ~ "Dianping",
+           TRUE ~ Social.media.source.data
+         ))
+
 # Group and count souces
 source <- source %>%
   group_by(Social.media.source.data, Type.of.social.media.data) %>%
@@ -1287,6 +1296,16 @@ source2 <- source2[!is.na(source2$Social.media.source.data) & source2$Social.med
 
 # split columns (since there are cases where there is more than one source and social media per row separated by ";")
 source2 <- separate_rows(source2, Social.media.source.data, sep = ";")
+
+# Standardize source names (merge equivalent/renamed platforms)
+source2 <- source2 %>%
+  mutate(Social.media.source.data = trimws(Social.media.source.data),
+         Social.media.source.data = case_when(
+           Social.media.source.data %in% c("Sina Weibo", "Sina Blog") ~ "Sina Weibo",
+           Social.media.source.data %in% c("Dianping", "Meituan Dianping") ~ "Dianping",
+           TRUE ~ Social.media.source.data
+         )) %>%
+  distinct(ID, Social.media.source.data, author, .keep_all = TRUE)
 
 # Identify duplicate IDs
 source2 <- source2 %>%
@@ -1339,25 +1358,66 @@ type_count <- type_count %>%
   arrange(desc(Type.of.social.media.data)) %>%
   mutate(ypos = cumsum(n) - 0.5 * n)
 
+# Small slices (< 5%) get their label pulled outside the pie with a short leader
+# line, so they don't overlap the neighboring "inside" labels; larger slices keep
+# their label centered inside the wedge as before.
+type_count <- type_count %>%
+  arrange(ypos) %>%
+  mutate(outside = prop < 5,
+         label_ypos = ypos)
+
+out_idx <- which(type_count$outside)
+if (length(out_idx) > 1) {
+  gap <- sum(type_count$n) * 0.045
+  mid <- mean(type_count$ypos[out_idx])
+  n_out <- length(out_idx)
+  type_count$label_ypos[out_idx] <- mid + (seq_len(n_out) - (n_out + 1) / 2) * gap
+}
+
+inside_labels  <- type_count %>% filter(!outside)
+outside_labels <- type_count %>% filter(outside)
+
+# Named palette so fill and color scales assign the same color to each category
+# regardless of which subset of categories each layer's data happens to contain
+# (an unnamed vector would otherwise reassign colors by position within each layer).
+type_media_colors <- c("Geolocated photos" = "#E69F00",
+                        "Geolocation"       = "#56B4E9",
+                        "Hashtags"          = "#009E73",
+                        "Sign-in data"      = "#F0E442",
+                        "Text"              = "#0072B2")
+
 # Create the pie chart
 type_social_media<- ggplot(type_count, aes(x = "", y = n, fill = Type.of.social.media.data)) +
   geom_bar(stat = "identity", width = 1) +
   coord_polar(theta = "y") +
-  
-  geom_label(aes(y = ypos, label = paste0(round(prop, 0), "%")), 
-             fill = "white", color = "black", size = 3, alpha = 0.7)+
+  scale_x_discrete(expand = expansion(add = c(0.5, 0.9))) +
 
-  labs(fill = "", title = "Type of social media data", title.x = 0.5, title.y = 1.2 ,size=10) +
+  # leader lines (matching wedge color) pointing to the small slices' labels
+  geom_segment(data = outside_labels,
+               aes(x = 1.5, xend = 1.75, y = ypos, yend = label_ypos,
+                   color = Type.of.social.media.data),
+               linewidth = 0.5, show.legend = FALSE) +
+
+  geom_label(data = inside_labels,
+             aes(y = ypos, label = paste0(round(prop, 0), "%")),
+             fill = "white", color = "black", size = 3, alpha = 0.7) +
+  geom_label(data = outside_labels,
+             aes(x = 1.85, y = label_ypos, label = paste0(round(prop, 0), "%")),
+             fill = "white", color = "black", size = 3, alpha = 0.7) +
+
+  labs(fill = "", title = "Type of social media data") +
   theme_void() +
-  theme(plot.title = element_text(size = 8))+
-  scale_fill_manual(values = c("#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00"))
+  theme(plot.title = element_text(size = 8, hjust = 0.5, margin = margin(b = 6)),
+        plot.margin = margin(t = 10, r = 4, b = 2, l = 4)) +
+  scale_fill_manual(values = type_media_colors) +
+  scale_color_manual(values = type_media_colors)
 
 type_social_media
 
 # Combine both graphs using cowplot
 combined_plot <- ggdraw() +
   draw_plot(source_g, 0, 0, 1, 1) +
-  draw_plot(type_social_media, 0.54, 0.56, 0.45, 0.45) # adjust coordinates and size as needed5
+  draw_plot(type_social_media, 0.54, 0.51, 0.45, 0.45) # adjust coordinates and size as needed5
 
 # print plot
 print(combined_plot)
